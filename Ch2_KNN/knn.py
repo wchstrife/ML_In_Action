@@ -72,5 +72,18 @@ def datingClassTest():
 
     print("the total error rate is: %f " % (errorCount / float(numTestVecs)))
 
+
+# 手写数字识别，图像转向量
+def img2vector(filename):
+    returnVect = zeros((1, 1024))
+    fr = open(filename)
+
+    for i in range(32):
+        lineStr = fr.readline()
+        for j in range(32):
+            returnVect[0, 32 * i + j] = int(lineStr[j])
+    return returnVect
+
+
 if __name__ == "__main__":
     datingClassTest()
