@@ -1,4 +1,5 @@
 from numpy import *
+from os import listdir
 import operator
 
 def createDataSet():
@@ -73,7 +74,7 @@ def datingClassTest():
     print("the total error rate is: %f " % (errorCount / float(numTestVecs)))
 
 
-# 手写数字识别，图像转向量
+# 手写数字识别，图像转向量，将32*32的txt变为1*1024的矩阵
 def img2vector(filename):
     returnVect = zeros((1, 1024))
     fr = open(filename)
@@ -84,6 +85,38 @@ def img2vector(filename):
             returnVect[0, 32 * i + j] = int(lineStr[j])
     return returnVect
 
+# 手写数字识别
+def handwritingClassTest():
+    # 训练集
+    hwLabels = []
+    trainingFileList = listdir('Ch02/trainingDigits')
+    m = len(trainingFileList)           # 文件数目
+    trainingMat = zeros((m, 1024))      #  测试集矩阵
+
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0]         # 过滤掉后缀
+        classNumStr = int(fileStr.split('_')[0])    # 数字的类别
+        hwLabels.append(classNumStr)
+        trainingMat[i, :] = img2vector('Ch02/trainingDigits/%s' % fileNameStr)
+
+    # 测试集
+    testFileList = listdir('Ch02/testDigits')
+    errorCount = 0.0
+    mTest = len(testFileList)
+
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]         # 过滤掉后缀
+        classNumStr = int(fileStr.split('_')[0])    # 数字的类别
+        vectorUnderTest = img2vector('Ch02/testDigits/%s' % fileNameStr)
+        classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
+        print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, classNumStr))
+        if (classifierResult != classNumStr):
+            errorCount += 1.0
+        
+    print("\nthe total number of errors is: %d" % errorCount)
+    print("\nthe total error rate is: %f" % (errorCount / float(mTest)))    
 
 if __name__ == "__main__":
-    datingClassTest()
+    handwritingClassTest()
